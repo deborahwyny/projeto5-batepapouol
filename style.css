@@ -57,6 +57,7 @@ main {
   color: #282626;
   list-style: none;
   border-radius: 2px;
+  width: 100%;
   
 }
 .status {
@@ -95,7 +96,12 @@ footer {
 .footer-icon {
   width: 26px;
   height: 26px;
+  border: none;
+  background-color: #ffffff ;
+  outline: 0;
 }
-.footer-icon:hover {
-  background-color: #ffffff;
+
+.icon-bottom {
+  height: 26px;
+  width: 26px;
 }

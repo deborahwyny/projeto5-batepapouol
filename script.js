@@ -1,144 +1,123 @@
-axios.defaults.headers.common['Authorization'] = 'ufs6rqUwCkDYvURpjxAObPdf';
+axios.defaults.headers.common["Authorization"] = "ufs6rqUwCkDYvURpjxAObPdf";
 
-// pegar conteudo  mensagens 
-const conteudoMensagens = []
+// pegar conteudo  mensagens
+const conteudoMensagens = [];
 
-const mensagem = axios.get('https://mock-api.driven.com.br/api/vm/uol/messages')
-mensagem.then(receberMensagens)
-mensagem.catch(erroMensagens)
+setInterval(mensagensReload,3000);
 
+function mensagensReload() {
+  const mensagem = axios.get(
+    "https://mock-api.driven.com.br/api/vm/uol/messages"
+  );
+  mensagem.then(receberMensagens);
+  mensagem.catch(erroMensagens);
+  
+}
 
+function receberMensagens(mensagensRecebidas) {
+  const recebMensagens = document.querySelector(".boxMensagens");
+  recebMensagens.innerHTML = "";
 
-function receberMensagens (mensagensRecebidas) {
-    const recebMensagens = document.querySelector('.boxMensagens');
-    recebMensagens.innerHTML = '';
-    console.log(mensagensRecebidas.data);
+  let mensagens = mensagensRecebidas.data;
 
-    let mensagens = mensagensRecebidas.data
+  for (let i = 0; i < mensagens.length; i++) {
+    let msg = mensagens[i];
 
-    for (let i = 0; i < mensagens.length; i++){
-        let msg = mensagens[i];
-
-        if (msg.type === "status") {
-
-        let mens = document.createElement('li')
-        mens.className = "mensagem status"
-        mens.innerHTML = `<span>(${msg.time}) </span><strong>${msg.from} </strong> ${msg.text}`
-        recebMensagens.appendChild(mens)
-
-        }
-
-        else {
-
-        let mens = document.createElement('li')
-        mens.className = "mensagem"
-        mens.innerHTML = `<span>(${msg.time}) </span><strong>${msg.from}</strong> para <strong>${msg.to}</strong>: ${msg.text}`
-        recebMensagens.appendChild(mens)
-        }
-
+    if (msg.type === "status") {
+      let mens = document.createElement("li");
+      mens.className = "mensagem status";
+      mens.setAttribute("data-test", "message")
+      mens.innerHTML = `<span>(${msg.time}) </span><strong>${msg.from} </strong> ${msg.text}`;
+      recebMensagens.appendChild(mens);
+    } else {
+      let mens = document.createElement("li");
+      mens.className = "mensagem";
+      mens.setAttribute("data-test", "message")
+      mens.innerHTML = `<span>(${msg.time}) </span><strong>${msg.from}</strong> para <strong>${msg.to}</strong>: ${msg.text}`;
+      recebMensagens.appendChild(mens);
     }
-    
-
-    // for (let i = 0; i < conteudoMensagens.length; i++)
-    // let boxMensagem = boxMensagens [i]
-
-    // recebMensagens += 
+  }
 }
 
-function erroMensagens (mensagensErr) {
-    alert('Erro ao receber mensagens!')
+function erroMensagens(mensagensErr) {
+  alert("Erro ao receber mensagens!");
 }
 
-
-function statusUsuario () {
-    const status = axios.post('https://mock-api.driven.com.br/api/vm/uol/status', usuario);
+function statusUsuario() {
+  const status = axios.post(
+    "https://mock-api.driven.com.br/api/vm/uol/status",usuario);
     console.log(status)
 }
 
-
-
-
-
-
-
 // enviar novo de usuario
-let nomeUsuario = prompt('Qual o seu nome?');
+let nomeUsuario = prompt("Qual o seu nome?");
 let usuario = {
-    name: nomeUsuario
-}
-
+  name: nomeUsuario,
+};
 
 postarUsuario(usuario);
 
-setTimeout(statusUsuario(), 5000)
-
-
-
+setInterval(statusUsuario, 5000);
 
 function postarUsuario(user) {
-    const promessa = axios.post('https://mock-api.driven.com.br/api/vm/uol/participants', user)
-    promessa.then(enviarUsuario);
-    promessa.catch(enviarUsuarioErro)
+  const promessa = axios.post(
+    "https://mock-api.driven.com.br/api/vm/uol/participants",user);
+  promessa.then(enviarUsuario);
+  promessa.catch(enviarUsuarioErro);
 }
 
-function enviarUsuario (usuarioRecebido) {
-    alert('Vamos tc?')
-
+function enviarUsuario(usuarioRecebido) {
+  alert("Vamos tc?");
 }
 
+function enviarUsuarioErro(usuarioErro) {
+  if (usuarioErro.response.status === 400) {
+    alert("Nome de usuário já existente");
+    nomeUsuario = prompt("Novamente o seu nome?");
 
-function enviarUsuarioErro (usuarioErro){
-if(usuarioErro.response.status === 400) {
-    alert('Nome de usuário já existente')
-    nomeUsuario = prompt('Novamente o seu nome?');
-
-         usuario = {
-        name: nomeUsuario
-    }
+    usuario = {
+      name: nomeUsuario,
+    };
     postarUsuario(usuario);
+  }
 }
-}
 
+// enviar mensagem
 
+function enviarMensagem() {
+  let conteudoMensagem = document.querySelector("#texto").value;
 
+  let hoje = new Date();
+  let hora = hoje.getHours().toString().padStart(2, "0");
+  let minutos = hoje.getMinutes().toString().padStart(2, "0");
+  let segundos = hoje.getSeconds().toString().padStart(2, "0");
+  let horario = `${hora}:${minutos}:${segundos}`;
 
-// enviar mensagem 
-
-
-function enviarMensagem () {
-    let conteudoMensagem = document.querySelector('#texto').value
-
-let hoje = new Date();
-let hora = hoje.getHours().toString().padStart(2,'0');
-let minutos = hoje.getMinutes().toString().padStart(2, '0');
-let segundos = hoje.getSeconds().toString().padStart(2, '0');
-let horario = `${hora}:${minutos}:${segundos}`
-
-
-
-let mensagem = {
+  let mensagem = {
     from: nomeUsuario,
     to: "Todos",
     text: conteudoMensagem,
     type: "message",
-    time: horario 
-}
-console.log(mensagem)
+    time: horario,
+  };
 
+  let mens = axios.post(
+    "https://mock-api.driven.com.br/api/vm/uol/messages",mensagem);
+  mens.then(mensagemEnviada);
+  mens.catch(erroAoEnviar);
+  console.log(mens)
 
-}
-
-function enviandoMens () {
-let mens = axios.post('https://mock-api.driven.com.br/api/vm/uol/messages', mensagem)
-mens.then(mensagemEnviada)
-mens.catch(erroAoEnviar)
-}
-
-
-function mensagemEnviada (deuCerto) {
-console.log(deuCerto)
+  document.querySelector("#texto").value = "";
 }
 
-function erroAoEnviar (errou) {[
-    alert('Erro ao enviar mensagem!')
-]}
+
+function mensagemEnviada(deuCerto) {
+    console.log('deu certo')
+    mensagensReload();
+    
+}
+
+function erroAoEnviar(errou) {
+    window.location.reload();
+    console.log('deu errado')
+}

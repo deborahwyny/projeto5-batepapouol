@@ -29,16 +29,13 @@
     </main>
     <footer>
       <input
+         data-test="input-message"
         class="input-text"
         type="text"
         id="texto"
         placeholder="Escreva aqui..."
       />
-      <ion-icon
-        onclick="enviarMensagem()"
-        class="footer-icon"
-        name="paper-plane-outline"
-      ></ion-icon>
+      <button  data-test="send-message" onclick="enviarMensagem()" class="footer-icon"> <ion-icon name="paper-plane-outline" class="icon-bottom"></ion-icon></button>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
